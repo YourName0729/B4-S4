@@ -1,3 +1,5 @@
+#include <vector>
+#include <utility>
 #include "cnf.hpp"
 
 class Converter {
@@ -6,11 +8,36 @@ public:
         height = h + 2, length = l + 2, period = p;
     }
 
-    CNF convert() const {
+    CNF convert() {
+        cnf.clear();
+
+        ruleNeighbor();
+        ruleWall();
+        ruleNotAllZero();
+
+        return cnf;
+    }
+
+    std::vector<std::pair<int, int>> decode(const Clause& cls) {
+        std::vector<std::pair<int, int>> res;
+        for (const auto& v : cls) {
+            if (v > 0 && (v - 1) % period == 0) {
+                int d = (v - 1) / period;
+                res.push_back({d / length, d % length});
+            }
+        }
+        return res;
+    }
+
+protected:
+    inline int getIndex(int x, int y, int p) const {
+        return (x * length + y) * period + p + 1;
+    }
+
+    void ruleNeighbor() {
         const int dx[] = {1, 1, 1, 0, -1, -1, -1, 0};
         const int dy[] = {-1, 0, 1, 1, 1, 0, -1, -1};
 
-        CNF cnf;
         for (int i = 1; i < height - 1; ++i) {
             for (int j = 1; j < length - 1; ++j) {
                 for (int k = 0; k < period; ++k) {
@@ -18,43 +45,13 @@ public:
                     for (int l = 0; l < 8; ++l) {
                         cls.push_back(getIndex(i + dx[l], j + dy[l], k));
                     }
-                    neighbor(cnf, cls, getIndex(i, j, (k + 1) % period));
+                    ruleSingleNeighbor(cls, getIndex(i, j, (k + 1) % period));
                 }
             }
         }
-
-        for (int i = 0; i < period; ++i) {
-            for (int j = 0; j < height; ++j) {
-                cnf.push_back({-getIndex(j, 0, i)});
-                cnf.push_back({-getIndex(j, length - 1, i)});
-            }    
-            for (int j = 1; j < length - 1; ++j) {
-                cnf.push_back({-getIndex(0, j, i)});
-                cnf.push_back({-getIndex(height - 1, j, i)});
-            }
-        }
-
-        Clause all;
-        for (int i = 1; i < height - 1; ++i) {
-            for (int j = 1; j < length - 1; ++j) {
-                for (int k = 0; k < period; ++k) {
-                    all.push_back(getIndex(i, j, k));
-                }
-            }
-        }
-        cnf.push_back(all);
-
-        return cnf;
     }
 
-    
-
-protected:
-    inline int getIndex(int x, int y, int p) const {
-        return (x * length + y) * period + p + 1;
-    }
-
-    void neighbor(CNF& cnf, Clause nei, int nxt) const {
+    void ruleSingleNeighbor(Clause nei, int nxt) {
         CNF cp, pick = CNF::Choose({0, 1, 2, 3, 4, 5, 6, 7}, 4);
         for (Clause& cls : pick) {
             nei.flip(cls);
@@ -69,5 +66,31 @@ protected:
         cnf.appendClauses(CNF::Choose(nei, 5).appendLiteral(-nxt));
     }
 
+    void ruleWall() {
+        for (int i = 0; i < period; ++i) {
+            for (int j = 0; j < height; ++j) {
+                cnf.push_back({-getIndex(j, 0, i)});
+                cnf.push_back({-getIndex(j, length - 1, i)});
+            }    
+            for (int j = 1; j < length - 1; ++j) {
+                cnf.push_back({-getIndex(0, j, i)});
+                cnf.push_back({-getIndex(height - 1, j, i)});
+            }
+        }
+    }
+
+    void ruleNotAllZero() {
+        Clause all;
+        for (int i = 1; i < height - 1; ++i) {
+            for (int j = 1; j < length - 1; ++j) {
+                for (int k = 0; k < period; ++k) {
+                    all.push_back(getIndex(i, j, k));
+                }
+            }
+        }
+        cnf.push_back(all);
+    }
+
     unsigned int height, length, period;
+    CNF cnf;
 };

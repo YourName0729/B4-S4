@@ -1,3 +1,6 @@
+#ifndef CNF_H
+#define CNF_H
+
 #include <iostream>
 #include "clause.hpp"
 
@@ -54,3 +57,5 @@ protected:
         prv.pop_back();
     }
 };
+
+#endif

@@ -1,3 +1,6 @@
+#ifndef CLAUSE_H
+#define CLAUSE_H_
+
 #include <vector>
 #include <initializer_list>
 #include <iostream>
@@ -26,3 +29,5 @@ public:
         return *this;
     }
 };
+
+#endif
