@@ -1,6 +1,7 @@
 #include <vector>
 #include <utility>
 #include "cnf.hpp"
+#include "state.hpp"
 
 class Converter {
 public: 
@@ -8,25 +9,40 @@ public:
         height = h + 2, length = l + 2, period = p;
     }
 
-    CNF convert() {
+    CNF& convert() {
         cnf.clear();
 
         ruleNeighbor();
         ruleWall();
         ruleNotAllZero();
+        //ruleMarginal();
 
         return cnf;
     }
 
-    std::vector<std::pair<int, int>> decode(const Clause& cls) {
-        std::vector<std::pair<int, int>> res;
+    CNF& preventOld(const State& st) {
+        if (st.getHeight() > height - 2 || st.getLength() > length - 2)   return cnf;
+        for (int i = 0; i < height - st.getHeight() - 1; ++i) {
+            for (int j = 0; j < length - st.getLength() - 1; ++j) {
+                paste(st, -i, -j);
+            }
+        }
+        return cnf;
+    }
+
+    State decode(const Clause& cls) {
+        State st;
         for (const auto& v : cls) {
             if (v > 0 && (v - 1) % period == 0) {
                 int d = (v - 1) / period;
-                res.push_back({d / length, d % length});
+                st.add({d / static_cast<int>(length), d % static_cast<int>(length)});
             }
         }
-        return res;
+        return st;
+    }
+
+    const CNF& getCnf() const {
+        return cnf;
     }
 
 protected:
@@ -89,6 +105,33 @@ protected:
             }
         }
         cnf.push_back(all);
+    }
+
+    void ruleMarginal() {
+        Clause c1, c2, c3, c4;
+        for (int i = 1; i < height - 1; ++i) {
+            c1.push_back(getIndex(i, 1, 0));
+            c2.push_back(getIndex(i, length - 2, 0));
+        }
+        for (int i = 1; i < length - 2; ++i) {
+            c3.push_back(getIndex(1, i, 0));
+            c4.push_back(getIndex(height - 2, i, 0));
+        }
+        cnf.push_back(c1);
+        cnf.push_back(c2);
+        cnf.push_back(c3);
+        cnf.push_back(c4);
+    }
+
+    void paste(const State& st, int ofsx, int ofsy) {
+        Clause cls;
+        for (int i = 1; i < height - 1; ++i) {
+            for (int j = 1; j < length - 1; ++j) {
+                if (st.count({i + ofsx, j + ofsy})) cls.push_back(-getIndex(i, j, 0));
+                else cls.push_back(getIndex(i, j, 0));
+            }
+        }
+        cnf.push_back(cls);
     }
 
     unsigned int height, length, period;

@@ -45,7 +45,6 @@
 # Test Case
 *.cnf
 *.sat
-*.txt
 
 # MiniSat
 MiniSat_v1.14_linux
