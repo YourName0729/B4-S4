@@ -29,16 +29,16 @@ void print(const State& st) {
 // }
 
 int main() {
-    Converter cvt(15, 15, 5);
+    Converter cvt(20, 20, 2);
 
     cvt.convert();
-    // for (const auto& entry : filesystem::directory_iterator("./oscillator")) {
-    //     if (entry.path() == "./oscillator/tmp.txt") continue;
-    //     ifstream fin(entry.path());
-    //     State st;
-    //     fin >> st;
-    //     cvt.preventOld(st);
-    // }
+    for (const auto& entry : filesystem::directory_iterator("./oscillator")) {
+        if (entry.path() == "./oscillator/tmp.txt") continue;
+        ifstream fin(entry.path());
+        State st;
+        fin >> st;
+        cvt.preventOld(st);
+    }
 
     std::ofstream fout("cnf.cnf");
     DIMACSAdapter::cnf2dimacs(cvt.getCnf(), fout);

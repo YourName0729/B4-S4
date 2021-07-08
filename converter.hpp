@@ -15,7 +15,7 @@ public:
         ruleNeighbor();
         ruleWall();
         ruleNotAllZero();
-        //ruleMarginal();
+        ruleMarginal();
 
         return cnf;
     }
