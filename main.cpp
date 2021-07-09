@@ -21,6 +21,13 @@ void print(const State& st) {
     }
 }
 
+void print(const string& s) {
+    State st;
+    ifstream fin(s);
+    fin >> st;
+    print(st);
+}
+
 // bool prefix(const string& s, const string& t) {
 //     for (int i = 0; i < t.length(); ++i) {
 //         if (s[i] != t[i]) return 0;
@@ -29,43 +36,45 @@ void print(const State& st) {
 // }
 
 int main() {
-    Converter cvt(20, 20, 2);
 
-    cvt.convert();
-    for (const auto& entry : filesystem::directory_iterator("./oscillator")) {
-        if (entry.path() == "./oscillator/tmp.txt") continue;
-        ifstream fin(entry.path());
-        State st;
-        fin >> st;
-        cvt.preventOld(st);
-    }
+    print("./oscillator/o12x12x2_tilt_1.txt");
+    // Converter cvt(20, 20, 2);
 
-    std::ofstream fout("cnf.cnf");
-    DIMACSAdapter::cnf2dimacs(cvt.getCnf(), fout);
-    fout.close();
+    // cvt.convert();
+    // for (const auto& entry : filesystem::directory_iterator("./oscillator")) {
+    //     if (entry.path() == "./oscillator/tmp.txt") continue;
+    //     ifstream fin(entry.path());
+    //     State st;
+    //     fin >> st;
+    //     cvt.preventOld(st);
+    // }
 
-    system("./MiniSat_v1.14_linux cnf.cnf ans.sat");
+    // std::ofstream fout("cnf.cnf");
+    // DIMACSAdapter::cnf2dimacs(cvt.getCnf(), fout);
+    // fout.close();
 
-    std::ifstream fin("ans.sat");
-    auto st = cvt.decode(DIMACSAdapter::dimacs2cls(fin));
-    fin.close();
+    // system("./MiniSat_v1.14_linux cnf.cnf ans.sat");
 
-    if (!st.size()) return 0;
+    // std::ifstream fin("ans.sat");
+    // auto st = cvt.decode(DIMACSAdapter::dimacs2cls(fin));
+    // fin.close();
 
-    std::ofstream fout2("oscillator/tmp.txt");
-    fout2 << st;
-    fout2.close();
+    // if (!st.size()) return 0;
 
-    print(st);
+    // std::ofstream fout2("oscillator/tmp.txt");
+    // fout2 << st;
+    // fout2.close();
 
-    string name;
-    stringstream ss;
-    cin >> name;
-    if (name == ".") return 0;
-    ss << "oscillator/o" << st.getHeight() << 'x' << st.getLength() << 'x' << 2 << '_' << name << ".txt";
-    ss >> name;
+    // print(st);
 
-    rename("oscillator/tmp.txt", name.c_str());
+    // string name;
+    // stringstream ss;
+    // cin >> name;
+    // if (name == ".") return 0;
+    // ss << "oscillator/o" << st.getHeight() << 'x' << st.getLength() << 'x' << 2 << '_' << name << ".txt";
+    // ss >> name;
+
+    // rename("oscillator/tmp.txt", name.c_str());
 
     return 0;
 }
