@@ -38,6 +38,11 @@ void print(const string& s) {
 int main() {
 
     print("./oscillator/o12x12x2_tilt_1.txt");
+    for (const auto& entry : filesystem::directory_iterator("./oscillator")) {
+        if (entry.path() == "./oscillator/tmp.txt") continue;
+        print(entry.path().string());
+    }
+        
     // Converter cvt(20, 20, 2);
 
     // cvt.convert();

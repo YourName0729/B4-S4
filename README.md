@@ -73,6 +73,13 @@ And further we have some complicated and not well-symmetrical oscillators. The n
 |Parallelogram|![](https://i.imgur.com/9V5LNvD.png)|![](https://i.imgur.com/SbMEIZb.png)|
 |Tilt|![](https://i.imgur.com/cY7UAYV.png)|![](https://i.imgur.com/NnIYbb7.png)|
 
+## Theorem
+There are infinitely many oscillators, since we can repeat this pattern for any finite times
+
+| time 0 | time 1 | 
+| -------- | -------- | 
+| ![](https://i.imgur.com/dkZVmnT.png)| ![](https://i.imgur.com/PisjCMu.png)| 
+
+
 ## Hypothesis
 - all oscillators are with period 2
-- there is a way to construct oscillator by some pieces, so that we can extend them to get infinitely many oscillators
